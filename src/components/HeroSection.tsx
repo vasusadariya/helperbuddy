@@ -159,7 +159,7 @@ export default function HeroSection() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-200 max-w-xl mx-auto"
             >
-              Your Helper Buddy is Just a Click Away
+              Your Qwykli is Just a Click Away
             </motion.p>
             <div className="flex justify-center">
               <ButtonWithArrow />
