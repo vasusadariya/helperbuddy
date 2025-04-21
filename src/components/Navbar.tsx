@@ -153,7 +153,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 shrink-0">
             <Image className="h-10 w-auto" src="/logo.png" alt="Helper Buddy" width={40} height={40} />
-            <span className="hidden md:block text-2xl font-extrabold text-black tracking-wide">Helper Buddy</span>
+            <span className="hidden md:block text-2xl font-extrabold text-black tracking-wide">Qwykli</span>
           </Link>
 
           {/* Navigation Links - Desktop */}
