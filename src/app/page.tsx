@@ -18,7 +18,7 @@ const ReviewSection = dynamic(() => import('@/components/ReviewSection'), {
 
 
 export const metadata: Metadata = {
-  title: 'Helper Buddy - Professional Home Services at Your Doorstep',
+  title: 'Qwykli - Professional Home Services at Your Doorstep',
   description: 'Book professional home services including cleaning, repairs, and maintenance. Trusted service providers, competitive prices, and satisfaction guaranteed.',
   keywords: 'home services, cleaning services, repair services, maintenance, professional services',
   openGraph: {
