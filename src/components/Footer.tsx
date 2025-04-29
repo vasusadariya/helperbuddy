@@ -150,7 +150,7 @@ const Footer: React.FC = () => {
           {/* Copyright */}
           <div className="pt-8 border-t border-gray-800">
             <p className="text-gray-400 text-sm text-center">
-              © {new Date().getFullYear()} Qwykli. All rights reserved.
+              © {new Date().getFullYear()} HelperBuddy. All rights reserved.
             </p>
           </div>
         </div>
@@ -219,7 +219,7 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="text-lg font-semibold mb-6">About Us</h3>
             <p className="text-gray-400 mb-4">
-              Qwykli offers professional house, office, and AC cleaning services across India, delivering top-quality, eco-friendly solutions tailored to your needs. Our trusted team ensures your spaces are spotless, fresh, and well-maintained.
+              HelperBuddy offers professional house, office, and AC cleaning services across India, delivering top-quality, eco-friendly solutions tailored to your needs. Our trusted team ensures your spaces are spotless, fresh, and well-maintained.
             </p>
             <Link href="/contactus" className="text-emerald-500 hover:text-emerald-400 transition-colors">
               Contact Us →
