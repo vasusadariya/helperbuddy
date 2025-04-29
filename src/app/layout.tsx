@@ -27,7 +27,7 @@ function RootLayoutClient({
     <html lang="en">
       <Providers>
         <head>
-            <meta name="google-site-verification" content="9yUEyhx7kBSVyE5ZDDXO7dOciMwSq2McFwwg-u7EMKE" />
+            <meta name="google-site-verification" content="ICqDJUuF_ho7F2zt6-zIxLm4XSmBptH9co5w4DhXq3k" />
         </head>
         <body className="antialiased">
           <EdgeStoreProvider>
