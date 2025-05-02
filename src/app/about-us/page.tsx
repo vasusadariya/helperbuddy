@@ -17,7 +17,7 @@ function ServicePage() {
                 Our Services
               </h1>
               <p className="text-base text-gray-600 sm:text-lg md:text-xl leading-relaxed">
-                Qwikly offers professional house, office, and AC cleaning
+                Helper Buddy offers professional house, office, and AC cleaning
                 services across India, delivering top-quality, eco-friendly solutions
                 tailored to your needs. Our trusted team ensures your spaces are spotless,
                 fresh, and well-maintained.
@@ -28,7 +28,7 @@ function ServicePage() {
               <div className="relative w-full h-96">
                 <Image
                   src="/logo.png"
-                  alt="Qwikly Services"
+                  alt="Helper Buddy Services"
                   fill
                   className="rounded-2xl object-cover shadow-xl"
                   priority
@@ -45,7 +45,7 @@ function ServicePage() {
               </h2>
               <div className="space-y-6">
                 <p className="text-gray-700 text-lg leading-relaxed">
-                  Qwikly is a professional service provider based in Surat,
+                  Helper Buddy is a professional service provider based in Surat,
                   Gujarat. We specialize in house, office, and AC cleaning
                   services, as well as installations and other related services.
                 </p>
@@ -113,7 +113,7 @@ function ServicePage() {
               </h3>
               <div className="aspect-w-16 aspect-h-9 h-[400px]">
                 <iframe
-                  src="https://www.instagram.com/Qwikly.in/embed"
+                  src="https://www.instagram.com/helperbuddy.in"
                   className="w-full h-full"
                   frameBorder="0"
                   scrolling="no"
@@ -122,7 +122,7 @@ function ServicePage() {
               </div>
               <div className="p-4 text-center">
                 <a
-                  href="https://www.instagram.com/Qwikly.in?igsh=bDZ3anI2amRjbXdp"
+                  href="https://www.instagram.com/helperbuddy.in/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-black-600 hover:text-gray-800 font-medium"
