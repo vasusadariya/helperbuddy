@@ -78,12 +78,12 @@ const Footer: React.FC = () => {
   }, []);
 
   const blogs: ServiceLink[] = [
-    { name: "Latest Posts", href: "http://localhost:3000/blogs?page=1" },
-    { name: "Featured Insights", href: "http://localhost:3000/blogs?page=2" }
+    { name: "Latest Posts", href: "https://helpperbuddy.vercel.app/blogs?page=1" },
+    { name: "Featured Insights", href: "https://helpperbuddy.vercel.app/blogs?page=2" }
   ];
 
   const contacts: Contact = {
-    phone: "+91 6359398479",
+    phone: "+91 6XXXXXXXX9",
     email: "hello@helperbuddy.in",
     address: "Amroli Cross Rd, near Santosh Electronics, Bhagu Nagar-1, Amroli, Surat, Gujarat 394107"
   };
@@ -98,7 +98,7 @@ const Footer: React.FC = () => {
   const footerLinks: FooterLink[] = [
     { name: "Services", href: "/services" },
     { name: "Blogs", href: "/blog" },
-    { name: "About", href: "/about" },
+    { name: "About", href: "/about-us" },
     { name: "Contact Us", href: "/contactus" }
   ];
 
