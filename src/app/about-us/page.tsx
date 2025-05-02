@@ -113,7 +113,7 @@ function ServicePage() {
               </h3>
               <div className="aspect-w-16 aspect-h-9 h-[400px]">
                 <iframe
-                  src="https://www.instagram.com/helperbuddy.in"
+                  src="https://www.instagram.com/helperbuddy.in/embed"
                   className="w-full h-full"
                   frameBorder="0"
                   scrolling="no"
@@ -122,7 +122,7 @@ function ServicePage() {
               </div>
               <div className="p-4 text-center">
                 <a
-                  href="https://www.instagram.com/helperbuddy.in/"
+                  href="https://www.instagram.com/helperbuddy.in?igsh=bDZ3anI2amRjbXdp"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-black-600 hover:text-gray-800 font-medium"
