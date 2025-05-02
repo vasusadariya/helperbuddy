@@ -41,7 +41,7 @@ function ServicePage() {
           <div className="bg-gradient-to-br from-gray-50 to-white shadow-lg rounded-2xl mb-16 transform hover:scale-[1.01] transition-transform duration-300">
             <div className="px-6 py-8 sm:px-8">
               <h2 className="text-3xl font-bold text-black mb-6 border-b border-gray-200 pb-4">
-                About Qwikly
+                About Helper Buddy
               </h2>
               <div className="space-y-6">
                 <p className="text-gray-700 text-lg leading-relaxed">
