@@ -335,7 +335,10 @@ export default function ServicesClient({
         await new Promise((resolve) => setTimeout(resolve, 3000));
         router.push('/user/dashboard');
       } else {
-        throw new Error("No service providers is currently available in your area.");
+        const failedResult = results.find((result) => !result.success);
+        throw new Error(
+          failedResult?.error || "Failed to create order. Please try again."
+        );
       }
     } catch (error) {
       console.error("Checkout error:", error);
