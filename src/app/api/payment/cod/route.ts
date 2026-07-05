@@ -4,7 +4,7 @@ import prisma from '@/lib/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/options';
 
 export async function POST(req: Request) {
-  const currentUTCTime = new Date("2025-02-19 12:19:33");
+  const currentUTCTime = new Date();
 
   try {
     const session = await getServerSession(authOptions);
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
               description: `Wallet payment for order #${order.id}`,
               walletId: wallet.id,
               userId: order.userId,
-              id: order.id
+              orderId: order.id
             }
           });
         }

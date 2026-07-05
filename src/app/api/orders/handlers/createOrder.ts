@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import Razorpay from "razorpay";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import { sendNewOrderToEligiblePartners } from "../../services/emailServices";
 import { validateServerDateTime } from "../utils/dateValidation";
 import { handleWalletTransaction } from "../utils/walletUtils";
-
-const prisma = new PrismaClient();
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID!,

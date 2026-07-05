@@ -1,26 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
-import Razorpay from "razorpay"
-import { PrismaClient } from "@prisma/client"
+import prisma from "@/lib/prisma"
 import crypto from "crypto"
 
 // Constants
-const prisma = new PrismaClient()
-const result: { variable_value: number }[] = await prisma.$queryRaw`
-          SELECT variable_value FROM system_config 
-          WHERE variable_name = 'referral'
-        `
-const config = result[0]
-const REFERRAL_BONUS_AMOUNT = config.variable_value;
-const CURRENCY = "INR"
+const DEFAULT_REFERRAL_BONUS_AMOUNT = 100
 const MAX_RETRIES = 3
 const RETRY_DELAY = 1000 // 1 second
-console.log(CURRENCY);
-// Configuration
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
-console.log(razorpay);
+
+async function getReferralBonusAmount(): Promise<number> {
+  const result: { variable_value: number }[] = await prisma.$queryRaw`
+    SELECT variable_value FROM system_config
+    WHERE variable_name = 'referral'
+  `
+  return result[0]?.variable_value ?? DEFAULT_REFERRAL_BONUS_AMOUNT
+}
 
 // type ReferralResult = {
 //   wallet: Wallet
@@ -144,6 +137,8 @@ export async function POST(req: NextRequest) {
 
       console.log(`[${currentUTCTime}] Processing payment for order: ${order.id}`);
 
+      const referralBonusAmount = await getReferralBonusAmount();
+
       const result = await prisma.$transaction(async (tx) => {
         const orderWithUser = await tx.order.findUnique({
           where: { id: order.id },
@@ -207,25 +202,26 @@ export async function POST(req: NextRequest) {
           await tx.wallet.update({
             where: { id: referrerWallet.id },
             data: {
-              balance: { increment: REFERRAL_BONUS_AMOUNT }
+              balance: { increment: referralBonusAmount }
             }
           });
 
-          // Create referral bonus transaction
+          // Create referral bonus transaction. Note: this is intentionally not
+          // linked via orderId — Transaction.orderId is unique and the wallet
+          // payment transaction above may already claim that order's slot.
           referralBonus = await tx.transaction.create({
             data: {
-              amount: REFERRAL_BONUS_AMOUNT,
+              amount: referralBonusAmount,
               type: "REFERRAL_BONUS",
-              description: `Referral bonus for ${order.user.name || order.user.email}'s first order`,
+              description: `Referral bonus for ${order.user.name || order.user.email}'s first order (order #${order.id})`,
               walletId: referrerWallet.id,
               userId: order.user.referrer.id,
-              orderId: order.id
             }
           });
 
           console.log(`[${currentUTCTime}] Referral bonus processed:`, {
             referrerId: order.user.referrer.id,
-            amount: REFERRAL_BONUS_AMOUNT,
+            amount: referralBonusAmount,
             transactionId: referralBonus.id
           });
         }
@@ -265,7 +261,7 @@ export async function POST(req: NextRequest) {
           timestamp: currentUTCTime,
           ...(result.referralBonus && {
             referralBonus: {
-              amount: REFERRAL_BONUS_AMOUNT,
+              amount: referralBonusAmount,
               transaction: result.referralBonus
             }
           })

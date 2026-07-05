@@ -1,17 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
+import { isAdmin } from "@/lib/auth";
 
 export async function handleDeleteOrder(req: NextRequest) {
   try {
+    if (!(await isAdmin())) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const url = new URL(req.url);
     const orderId = url.searchParams.get('id');
-    // Delete the order
+
+    if (!orderId) {
+      return NextResponse.json(
+        { error: "Order id is required" },
+        { status: 400 }
+      );
+    }
+
     const order = await prisma.order.delete({
       where: {
-        id: orderId || "",
+        id: orderId,
       },
     });
 

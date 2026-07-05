@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
               : `Full payment for order #${order.id}`,
             walletId: currentWallet.id,
             userId: order.userId,
-            id: order.id
+            orderId: order.id
           }
         });
 
