@@ -105,8 +105,8 @@ export default function ServicesPage() {
 
     const handleAddSubmit = async (formData: ServiceFormData, file?: File) => {
         setIsUploading(true);
+        let imageUrl = '';
         try {
-            let imageUrl = '';
             if (file) {
                 const res = await edgestore.publicFiles.upload({
                     file,
@@ -125,23 +125,26 @@ export default function ServicesPage() {
                 body: JSON.stringify({ ...formData, image: imageUrl }),
             });
 
-            if (response.ok) {
-                const newService = await response.json();
-                if (file && imageUrl) {
-                    // Make the upload permanent after successful service creation
-                    await edgestore.publicFiles.confirmUpload({
-                        url: imageUrl,
-                    });
-                }
-                setServices([...services, newService]);
-                setIsAddModalOpen(false);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.error || 'Failed to create service');
             }
+
+            const newService = await response.json();
+            if (file && imageUrl) {
+                // Make the upload permanent after successful service creation
+                await edgestore.publicFiles.confirmUpload({
+                    url: imageUrl,
+                });
+            }
+            setServices([...services, newService]);
+            setIsAddModalOpen(false);
         } catch (error) {
             console.error('Error adding service:', error);
             // Cleanup temporary upload if it exists
-            if (formData.image) {
+            if (imageUrl) {
                 await edgestore.publicFiles.delete({
-                    url: formData.image,
+                    url: imageUrl,
                 });
             }
         } finally {

@@ -28,20 +28,28 @@ export async function GET(req: Request) {
   const take = PAGE_SIZE;
   const skip = (page - 1) * take;
 
-  const results = await prisma.blog.findMany({
-    take,
-    skip,
-    where: { isActive: true },
-    orderBy: { createdAt: "desc" },
-  });
+  try {
+    const results = await prisma.blog.findMany({
+      take,
+      skip,
+      where: { isActive: true },
+      orderBy: { createdAt: "desc" },
+    });
 
-  const total = await prisma.blog.count({ where: { isActive: true } });
+    const total = await prisma.blog.count({ where: { isActive: true } });
 
-  return NextResponse.json({
-    data: results,
-    metadata: {
-      hasNextPage: skip + take < total,
-      totalPages: Math.ceil(total / take),
-    },
-  });
+    return NextResponse.json({
+      data: results,
+      metadata: {
+        hasNextPage: skip + take < total,
+        totalPages: Math.ceil(total / take),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch blogs", data: [], metadata: { hasNextPage: false, totalPages: 1 } },
+      { status: 500 }
+    );
+  }
 }

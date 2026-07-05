@@ -21,7 +21,6 @@ import Image from "next/image";
 import { OrderCancellationStatus } from "@/components/OrderCancellation";
 import { PaymentOptions } from "@/components/PaymentOptions";
 import { Review } from "@/components/review";
-import toast from "react-hot-toast";
 
 type DashboardStats = {
   totalOrders: number;
@@ -109,14 +108,6 @@ interface Transaction {
   };
 }
 
-interface TransactionsResponse {
-  success: boolean;
-  data: {
-    transactions: Transaction[];
-    timestamp: string;
-  };
-}
-
 interface WalletData {
   balance: number;
   transactions: Transaction[];
@@ -148,7 +139,6 @@ export default function UserDashboard() {
     completedOrders: 0,
     averageRating: 0,
   });
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [walletData, setWalletData] = useState<WalletData>({
     balance: 0,
     transactions: [],
@@ -156,30 +146,23 @@ export default function UserDashboard() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  console.log(transactions);
   const fetchDashboardData = async () => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // Fetch orders, wallet data, and transactions in parallel
-      const [ordersResponse, walletResponse, transactionsResponse] =
-        await Promise.all([
-          fetch("/api/user/orders?limit=3&include=partner"),
-          fetch("/api/wallet"),
-          fetch("/api/transactions"), // Add this new endpoint
-        ]);
+      // Fetch orders and wallet data in parallel
+      const [ordersResponse, walletResponse] = await Promise.all([
+        fetch("/api/user/orders?limit=3&include=partner"),
+        fetch("/api/wallet"),
+      ]);
 
       const ordersData: OrdersResponse = await ordersResponse.json();
       const walletData: WalletResponse = await walletResponse.json();
-      const transactionsData: TransactionsResponse =
-        await transactionsResponse.json();
 
       // Handle orders data
       if (ordersResponse.ok && ordersData.success) {
         const orders = ordersData.data.orders || [];
-        console.log("Fetched orders with partners:", orders);
-
         setRecentOrders(orders);
 
         const completedOrders = orders.filter(
@@ -214,8 +197,6 @@ export default function UserDashboard() {
       // Handle wallet data
       if (walletResponse.ok && walletData.success) {
         const wallet = walletData.data.wallet;
-        console.log("Fetched wallet data:", wallet);
-
         setWalletData({
           balance: Number(wallet.balance) || 0,
           transactions: [], // We'll use separate transactions state now
@@ -225,17 +206,6 @@ export default function UserDashboard() {
           walletData.data?.error || "Failed to fetch wallet data"
         );
       }
-
-      // Handle transactions data
-      if (transactionsResponse.ok && transactionsData.success) {
-        const transactions = transactionsData.data.transactions;
-        console.log("Fetched transactions:", transactions);
-
-        // Set all transactions without filtering
-        setTransactions(transactions);
-      } else {
-        throw new Error("Failed to fetch transactions");
-      }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
       setError(error instanceof Error ? error.message : "An error occurred");
@@ -243,59 +213,9 @@ export default function UserDashboard() {
       setIsLoading(false);
     }
   };
-  // Add handleCODPayment function
-  const handleCODPayment = async (order: Order) => {
-    const amount = order.remainingAmount || order.amount;
-    const confirmed = window.confirm(
-      `Please pay ₹${amount.toFixed(2)} to the service provider`
-    );
-
-    if (!confirmed) return;
-
-    try {
-      const response = await fetch("/api/payment/cod", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          orderId: order.id,
-        }),
-        credentials: "include", // Important for authentication
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(
-          errorData?.error || `HTTP error! status: ${response.status}`
-        );
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast.success("Payment confirmed and order completed");
-        window.location.reload();
-      } else {
-        throw new Error(data.error || "Failed to confirm payment");
-      }
-    } catch (error) {
-      console.error("Error confirming payment:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to confirm payment"
-      );
-    }
-  };
-  console.log(handleCODPayment);
-
   useEffect(() => {
     fetchDashboardData();
   }, []);
-
-  // Add debug logs in the render section
-  console.log("Current recentOrders:", recentOrders);
-  console.log("Current walletData:", walletData);
 
   const getStatusDisplay = (order: Order) => {
     if (order.walletAmount && order.walletAmount === order.amount) {
@@ -452,7 +372,7 @@ export default function UserDashboard() {
             <Wallet className="text-blue-500 w-8 h-8" />
           </div>
           <Link
-            href="/user/dashboard/wallet"
+            href="/user/dashboard/transactions"
             className="mt-4 text-sm text-blue-600 hover:text-blue-800 flex items-center group"
           >
             View Transactions

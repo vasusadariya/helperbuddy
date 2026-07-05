@@ -151,23 +151,6 @@ function ProvidersList() {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        await Promise.all([fetchPendingPartners(), fetchApprovedPartners()]);
-      } catch (error) {
-        console.error('Error in initial data fetch:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-  useEffect(() => {
-    console.log('Approved Partners:', approvedPartners);
-  }, [approvedPartners]);
 
   if (loading) {
     return (

@@ -17,10 +17,15 @@ export const BlogFeed = () => {
 
 	useEffect(() => {
 		const fetchBlogs = async () => {
-			const res = await fetch(`/api/blogs?page=${page}`);
-			const { data, metadata } = await res.json();
-			setBlogs(data);
-			setMetadata(metadata);
+			try {
+				const res = await fetch(`/api/blogs?page=${page}`);
+				const { data, metadata } = await res.json();
+				setBlogs(data || []);
+				setMetadata(metadata || { totalPages: 1, hasNextPage: false });
+			} catch (err) {
+				console.error("Error fetching blogs:", err);
+				setBlogs([]);
+			}
 		};
 
 		fetchBlogs();

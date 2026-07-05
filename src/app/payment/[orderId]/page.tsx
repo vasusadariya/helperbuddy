@@ -75,7 +75,7 @@ export default function PaymentPage() {
 
   useEffect(() => {
     if (sessionStatus === 'unauthenticated') {
-      router.push('/login');
+      router.push('/signin');
       return;
     }
   

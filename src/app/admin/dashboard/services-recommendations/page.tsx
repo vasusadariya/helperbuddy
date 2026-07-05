@@ -14,6 +14,7 @@ interface RequestedService {
 interface PartnerRequestedService {
     id: string;
     name: string;
+    description?: string;
     status: string;
     partnerId?: string;
 }
@@ -153,7 +154,9 @@ export default function ServicesRecommendations() {
         if (service) {
             return {
                 name: service.name,
-                description: '',
+                description: selectedServiceType === 'partner'
+                    ? (service as PartnerRequestedService).description || ''
+                    : '',
                 price: 0,
                 category: '',
                 threshold: 2,

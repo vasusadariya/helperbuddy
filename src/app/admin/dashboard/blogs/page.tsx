@@ -23,6 +23,7 @@ export default function AdminBlogManager() {
     const [uploading, setUploading] = useState<boolean>(false);
     const [loadingBlogs, setLoadingBlogs] = useState<boolean>(true);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [editingBlog, setEditingBlog] = useState<Blog | null>(null);
     const { edgestore } = useEdgeStore();
 
     useEffect(() => {
@@ -42,15 +43,35 @@ export default function AdminBlogManager() {
         }
     };
 
-    const handleCreateBlog = async () => {
-        if (!title || !content || !author || !file) return alert('Please fill all required fields');
+    const resetForm = () => {
+        setEditingBlog(null);
+        setTitle('');
+        setContent('');
+        setAuthor('');
+        setReadTime(5);
+        setFile(null);
+    };
+
+    const handleEditClick = (blog: Blog) => {
+        setEditingBlog(blog);
+        setTitle(blog.title);
+        setContent(blog.content);
+        setAuthor(blog.author);
+        setReadTime(blog.readTime);
+        setFile(null);
+    };
+
+    const handleSubmitBlog = async () => {
+        if (!title || !content || !author || (!editingBlog && !file)) {
+            return alert('Please fill all required fields');
+        }
 
         setUploading(true);
-        let imageUrl = '';
+        let imageUrl = editingBlog?.image || '';
 
         try {
             if (file) {
-                const res = await edgestore.publicFiles.upload({ 
+                const res = await edgestore.publicFiles.upload({
                     file,
                     options: {
                         temporary: true,
@@ -60,24 +81,33 @@ export default function AdminBlogManager() {
             }
 
             const res = await fetch('/api/admin/blogs', {
-                method: 'POST',
+                method: editingBlog ? 'PUT' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, content, image: imageUrl, author, readTime }),
+                body: JSON.stringify(
+                    editingBlog
+                        ? { id: editingBlog.id, title, content, image: imageUrl, readTime }
+                        : { title, content, image: imageUrl, author, readTime }
+                ),
             });
 
             if (res.ok) {
                 fetchBlogs();
-                setTitle('');
-                setContent('');
-                setAuthor('');
-                setReadTime(5);
-                setFile(null);
-                edgestore.publicFiles.confirmUpload({url: imageUrl});
+                resetForm();
+                if (file) {
+                    edgestore.publicFiles.confirmUpload({ url: imageUrl });
+                }
+                if (file && editingBlog?.image && editingBlog.image !== imageUrl) {
+                    await fetch('/api/edgestore/delete', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ url: editingBlog.image }),
+                    });
+                }
             } else {
-                alert('Failed to create blog');
+                alert(editingBlog ? 'Failed to update blog' : 'Failed to create blog');
             }
         } catch (error) {
-            console.error('Error creating blog:', error);
+            console.error('Error saving blog:', error);
         } finally {
             setUploading(false);
         }
@@ -133,16 +163,26 @@ export default function AdminBlogManager() {
                 <input type="number" value={readTime} onChange={(e) => setReadTime(Number(e.target.value))}
                     placeholder="Read Time (min)" className="w-full p-2 border rounded" />
 
-                <SingleImageDropzone 
-                    width={200} 
-                    height={200} 
-                    value={file} 
-                    onChange={(file) => setFile(file ?? null)} 
+                <SingleImageDropzone
+                    width={200}
+                    height={200}
+                    value={file}
+                    onChange={(file) => setFile(file ?? null)}
                 />
+                {editingBlog?.image && !file && (
+                    <p className="text-xs text-gray-500">Leave image empty to keep the current one.</p>
+                )}
 
-                <button onClick={handleCreateBlog} disabled={uploading} className="bg-black text-white px-4 py-2 rounded w-full">
-                    {uploading ? 'Uploading...' : 'Create Blog'}
-                </button>
+                <div className="flex gap-2">
+                    <button onClick={handleSubmitBlog} disabled={uploading} className="bg-black text-white px-4 py-2 rounded flex-1">
+                        {uploading ? 'Saving...' : editingBlog ? 'Update Blog' : 'Create Blog'}
+                    </button>
+                    {editingBlog && (
+                        <button onClick={resetForm} className="bg-gray-200 text-gray-800 px-4 py-2 rounded">
+                            Cancel
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Blog List */}
@@ -160,13 +200,21 @@ export default function AdminBlogManager() {
                                 <h3 className="font-semibold">{blog.title}</h3>
                                 <p className="text-gray-600 text-sm">{blog.author} - {blog.readTime} min read</p>
                             </div>
-                            <button 
-                                onClick={() => handleDeleteBlog(blog.id, blog.image)}
-                                disabled={deletingId === blog.id}
-                                className="bg-red-500 text-white px-3 py-1 rounded"
-                            >
-                                {deletingId === blog.id ? 'Deleting...' : 'Delete'}
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => handleEditClick(blog)}
+                                    className="bg-blue-500 text-white px-3 py-1 rounded"
+                                >
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => handleDeleteBlog(blog.id, blog.image)}
+                                    disabled={deletingId === blog.id}
+                                    className="bg-red-500 text-white px-3 py-1 rounded"
+                                >
+                                    {deletingId === blog.id ? 'Deleting...' : 'Delete'}
+                                </button>
+                            </div>
                         </li>
                     ))}
                 </ul>

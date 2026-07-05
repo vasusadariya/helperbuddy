@@ -22,7 +22,6 @@ interface ExtendedSession extends Session {
     email?: string | null;
     image?: string | null;
     role: string;
-    walletBalance?: number;
   };
 }
 
@@ -40,7 +39,7 @@ export default function Navbar() {
   const isAuthenticated = !!session;
   const userRole = session?.user?.role;
   const userName = session?.user?.name;
-  const walletBalance = session?.user?.walletBalance || 0;
+  const [walletBalance, setWalletBalance] = useState(0);
 
   const [scrolling, setScrolling] = useState(false);
   const [query, setQuery] = useState<string>('');
@@ -58,10 +57,25 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const handleScroll = () => setScrolling(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (!isAuthenticated || userRole !== 'USER') {
+      setWalletBalance(0);
+      return;
+    }
+
+    let cancelled = false;
+    fetch('/api/wallet')
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.success) {
+          setWalletBalance(data.data.wallet.balance);
+        }
+      })
+      .catch((err) => console.error('Error fetching wallet balance:', err));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, userRole]);
 
   const fetchServices = async (query: string) => {
     if (!query) return setResults([]);
@@ -256,6 +270,7 @@ export default function Navbar() {
                   whileHover={{ scale: 1.05 }}
                   onMouseEnter={() => setShowWalletTooltip(true)}
                   onMouseLeave={() => setShowWalletTooltip(false)}
+                  onClick={() => router.push('/user/dashboard/transactions')}
                   className="p-2 rounded-full hover:bg-gray-100 transition-all"
                 >
                   <Wallet className="w-5 h-5 text-gray-600" />

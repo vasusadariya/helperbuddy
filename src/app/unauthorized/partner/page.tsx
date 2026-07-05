@@ -113,8 +113,8 @@ export default function Unauthorized() {
                 {/* Help Text */}
                 <p className="mt-6 text-sm text-gray-400">
                     Need a partner account?{" "}
-                    <Link 
-                        href="/partner/register" 
+                    <Link
+                        href="/register"
                         className="text-purple-400 hover:text-purple-300 hover:underline transition-colors duration-200"
                     >
                         Register here

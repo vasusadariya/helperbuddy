@@ -45,7 +45,7 @@ export default function TransactionsPage() {
       setIsLoading(true);
       setError(null);
 
-      const response = await fetch(`/api/transactions?page=${page}&limit=20&timestamp=2025-02-19 14:16:30`);
+      const response = await fetch(`/api/transactions?page=${page}&limit=20`);
       const data: TransactionsResponse = await response.json();
 
       if (!response.ok) {

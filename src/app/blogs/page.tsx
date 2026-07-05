@@ -28,15 +28,25 @@ export default function BlogsPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
-      const res = await fetch(`/api/blogs?page=${page}`);
-      const data = await res.json();
-      setBlogs(data.data);
-      setTotalPages(data.metadata.totalPages);
-      setLoading(false);
+      setError(false);
+      try {
+        const res = await fetch(`/api/blogs?page=${page}`);
+        const data = await res.json();
+        setBlogs(data.data || []);
+        setTotalPages(data.metadata?.totalPages || 1);
+        if (!res.ok) setError(true);
+      } catch (err) {
+        console.error("Error fetching blogs:", err);
+        setBlogs([]);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchBlogs();
   }, [page]);
@@ -60,6 +70,10 @@ export default function BlogsPage() {
         {loading ? (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center h-64 text-gray-500">
+            Failed to load blogs. Please try again later.
           </div>
         ) : (
           <motion.div

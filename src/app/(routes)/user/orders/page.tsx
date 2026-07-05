@@ -17,6 +17,8 @@ export default function OrdersPage() {
 
       return () => clearTimeout(redirectTimer);
     }
+
+    router.push('/user/dashboard');
   }, [router, status]);
 
   if (status === 'payment_success') {
@@ -40,7 +42,6 @@ export default function OrdersPage() {
     );
   }
 
-  // Redirect immediately if no success status
-  router.push('/user/dashboard');
+  // Redirect immediately if no success status (handled in the effect above)
   return null;
 }

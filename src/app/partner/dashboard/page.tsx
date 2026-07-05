@@ -282,7 +282,7 @@ export default function PartnerDashboard() {
           <h1 className="text-3xl font-bold text-black">Partner Dashboard</h1>
           <div className="flex space-x-4">
             <Link
-              href="/partner/request-new-service"
+              href="/partner/dashboard/request-new-service"
               className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
             >
               Request New Service

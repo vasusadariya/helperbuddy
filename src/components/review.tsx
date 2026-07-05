@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Star } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
@@ -25,12 +25,6 @@ export function Review({
   const [description, setDescription] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [reviewSubmitted, setReviewSubmitted] = useState(hasReview);
-  console.log("reviewSubmitted", reviewSubmitted);
-  useEffect(() => {
-    // Update reviewSubmitted when hasReview prop changes
-    setReviewSubmitted(hasReview);
-  }, [hasReview]);
 
   // Don't show review button if already reviewed or conditions not met
   if (hasReview || !isServiceCompleted || !isPaid || orderStatus !== 'COMPLETED') {
@@ -57,7 +51,6 @@ export function Review({
           orderId,
           rating,
           description: description.trim(),
-          timestamp: "2025-02-19 09:25:29"
         }),
       });
 
@@ -78,7 +71,6 @@ export function Review({
         }
       );
 
-      setReviewSubmitted(true);
       setShowForm(false);
       if (onReviewSubmit) {
         onReviewSubmit();

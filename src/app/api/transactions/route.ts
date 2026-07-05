@@ -1,12 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import prisma from "@/lib/prisma";
 
-export async function GET() {
-  const currentUTCTime = new Date("2025-02-17 17:56:28"); 
+export async function GET(request: NextRequest) {
+  const currentUTCTime = new Date("2025-02-17 17:56:28");
 
   try {
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, Number(searchParams.get("page")) || 1);
+    const limit = Math.max(1, Number(searchParams.get("limit")) || 20);
+
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -138,7 +142,7 @@ export async function GET() {
     const allTransactions = [...walletTransactions, ...paymentTransactions]
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    // Calculate some useful statistics
+    // Calculate some useful statistics (over the full history, not just this page)
     const statistics = {
       totalTransactions: allTransactions.length,
       totalDebited: allTransactions
@@ -150,16 +154,24 @@ export async function GET() {
       walletBalance: walletTransactions[0]?.Wallet?.balance || 0
     };
 
+    const paginatedTransactions = allTransactions.slice((page - 1) * limit, page * limit);
+
     return NextResponse.json({
       success: true,
       data: {
-        transactions: allTransactions.map(t => ({
+        transactions: paginatedTransactions.map(t => ({
           ...t,
           formattedAmount: `₹${t.amount?.toFixed(2)}`,
           formattedDate: new Date(t.createdAt).toLocaleDateString('en-IN'),
           transactionType: t.type === 'DEBIT' ? 'Payment' : 'Credit',
           paymentMethod: t.Order?.paymentMode || t.type
         })),
+        pagination: {
+          page,
+          limit,
+          total: allTransactions.length,
+          totalPages: Math.ceil(allTransactions.length / limit)
+        },
         statistics,
         timestamp: currentUTCTime,
       }

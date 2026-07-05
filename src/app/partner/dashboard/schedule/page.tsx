@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import { Calendar as CalendarIcon, AlertCircle } from "lucide-react";
+import { Calendar as CalendarIcon, AlertCircle, X } from "lucide-react";
 
 interface Order {
   id: string;
@@ -16,6 +17,7 @@ export default function CalendarPage() {
   const [acceptedOrders, setAcceptedOrders] = useState<Order[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     const fetchAcceptedOrders = async () => {
@@ -113,8 +115,8 @@ export default function CalendarPage() {
                 right: "dayGridMonth,dayGridWeek"
               }}
               eventClick={(info) => {
-                // Handle event click - you can add modal or navigation here
-                console.log("Event clicked:", info.event);
+                const order = acceptedOrders.find((o) => o.id === info.event.id);
+                if (order) setSelectedOrder(order);
               }}
             />
           </div>
@@ -135,6 +137,30 @@ export default function CalendarPage() {
           </div>
         </div>
       </div>
+
+      {/* Event Details Modal */}
+      {selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4 relative">
+            <button
+              onClick={() => setSelectedOrder(null)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-lg font-bold mb-4">{selectedOrder.service.name}</h3>
+            <p className="text-sm text-gray-600 mb-1">Date: {selectedOrder.date}</p>
+            <p className="text-sm text-gray-600 mb-4">Time: {selectedOrder.time}</p>
+            <Link
+              href="/partner/dashboard"
+              className="block text-center bg-black text-white px-4 py-2 rounded-md hover:bg-gray-700"
+            >
+              Manage in Dashboard
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

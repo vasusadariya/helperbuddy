@@ -78,8 +78,8 @@ const Footer: React.FC = () => {
   }, []);
 
   const blogs: ServiceLink[] = [
-    { name: "Latest Posts", href: "https://helpperbuddy.vercel.app/blogs?page=1" },
-    { name: "Featured Insights", href: "https://helpperbuddy.vercel.app/blogs?page=2" }
+    { name: "Latest Posts", href: "/blogs?page=1" },
+    { name: "Featured Insights", href: "/blogs?page=2" }
   ];
 
   const contacts: Contact = {
@@ -97,7 +97,7 @@ const Footer: React.FC = () => {
 
   const footerLinks: FooterLink[] = [
     { name: "Services", href: "/services" },
-    { name: "Blogs", href: "/blog" },
+    { name: "Blogs", href: "/blogs" },
     { name: "About", href: "/about-us" },
     { name: "Contact Us", href: "/contactus" }
   ];

@@ -111,6 +111,10 @@ export default function PartnerProfilePage() {
 
 
   const handleAddService = async () => {
+    if (!selectedService) {
+      setError("Please select a service before adding");
+      return;
+    }
     try {
       const response = await fetch("/api/partner/services/add", {
         method: "POST",
@@ -353,7 +357,8 @@ export default function PartnerProfilePage() {
             </button>
             <button
               onClick={handleAddService}
-              className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700"
+              disabled={!selectedService}
+              className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               Add
             </button>

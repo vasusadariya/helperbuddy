@@ -179,7 +179,7 @@ const ServiceSection: React.FC = () => {
                               ₹{service.price}
                             </span>
                             <Link
-                              href={`/book/${service.id}`}
+                              href={`/services?query=${encodeURIComponent(service.name)}`}
                               className="w-full sm:w-auto bg-black dark:bg-white text-white dark:text-black px-4 sm:px-6 py-2 rounded-full hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors text-center text-sm sm:text-base"
                             >
                               Book Now
